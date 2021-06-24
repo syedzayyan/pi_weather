@@ -30,9 +30,8 @@ try:
     disp = LCD_1inch14.LCD_1inch14()
     # Initialize library.
     disp.Init()
-    
+    disp.clear()
     while True:
-        disp.clear()
         
         # Create blank image for drawing.
         URL = "http://api.openweathermap.org/data/2.5/weather?q=Ashford&appid=" + os.getenv("API_KEY")
@@ -54,24 +53,24 @@ try:
         weatherIcon = Image.open(picDir)
         size = 95, 95
         weatherIcon.thumbnail(size)
-        image2.paste(weatherIcon, (15, 50))
+        image2.paste(weatherIcon, (15, 40))
 
         feelText = "Feels Like: " + str(int(feelsLike -273.00)) + "C" 
         draw.text((0, 15), feelText, font = Font0, fill = "WHITE")
 
-        minMax = "Max Temp: " + str(int(minTemp - 273.00)) + "C || Min Temp: " + str(int(maxTemp-273.00)) + "C"
+        minMax = "Min Temp: " + str(int(minTemp - 273.00)) + "C || Max Temp: " + str(int(maxTemp-273.00)) + "C"
         draw.text((0, 30), minMax, font = Font0, fill = "PURPLE")
 
 
         currTempText = str(int(currTemp - 273.00)) + "C"
         draw.text((130, 50), currTempText, font = Font1, fill = "YELLOW")
-        draw.text((140, 100), datetime.today().strftime('%Y-%m-%d'), font = Font0, fill = "BLUE")
+        draw.text((120, 100), datetime.today().strftime('%a %Y-%m-%d'), font = Font0, fill = "BLUE")
 
         cpu = CPUTemperature()
         temp = "CPU Temp: " + str(cpu.temperature) + "C"
         draw.text((0, 0), temp, font = Font0, fill = "RED")
         disp.ShowImage(image2)
-        time.sleep(30)    
+        time.sleep(5)    
     disp.module_exit()
 except IOError as e:
     print(e)    
