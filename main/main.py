@@ -4,7 +4,6 @@
 import os
 import sys 
 import time
-import logging
 import spidev as SPI
 sys.path.append("..")
 from lib import LCD_1inch14
@@ -23,9 +22,19 @@ DC = 25
 BL = 18
 bus = 0 
 device = 0 
-logging.basicConfig(level=logging.DEBUG)
-while True:
-    try:
+
+try:
+    # display with hardware SPI:
+    ''' Warning!!!Don't  creation of multiple displayer objects!!! '''
+    #disp = LCD_1inch14.LCD_1inch14(spi=SPI.SpiDev(bus, device),spi_freq=10000000,rst=RST,dc=DC,bl=BL)
+    disp = LCD_1inch14.LCD_1inch14()
+    # Initialize library.
+    disp.Init()
+    
+    while True:
+        disp.clear()
+        
+        # Create blank image for drawing.
         URL = "http://api.openweathermap.org/data/2.5/weather?q=London&appid=" + os.getenv("API_KEY")
 
         response = requests.get(URL)
@@ -35,16 +44,6 @@ while True:
         minTemp = data["main"]["temp_min"]
         maxTemp = data["main"]["temp_max"]
         tempIcon = data["weather"][0]["icon"]
-        # display with hardware SPI:
-        ''' Warning!!!Don't  creation of multiple displayer objects!!! '''
-        #disp = LCD_1inch14.LCD_1inch14(spi=SPI.SpiDev(bus, device),spi_freq=10000000,rst=RST,dc=DC,bl=BL)
-        disp = LCD_1inch14.LCD_1inch14()
-        # Initialize library.
-        disp.Init()
-        # Clear display.
-        disp.clear()
-        
-        # Create blank image for drawing.
         
         Font0 = ImageFont.truetype("../Font/Font02.ttf",18)
         Font1 = ImageFont.truetype("../Font/Font00.ttf",35)
@@ -68,17 +67,12 @@ while True:
 
         cpu = CPUTemperature()
         temp = "CPU Temp: " + str(cpu.temperature) + "C"
-        logging.info("draw text")
         draw.text((0, 0), temp, font = Font0, fill = "BLACK")
         disp.ShowImage(image2)
-        time.sleep(7200)
-
-        
-        disp.module_exit()
-        logging.info("quit:")
-    except IOError as e:
-        logging.info(e)    
-    except KeyboardInterrupt:
-        disp.module_exit()
-        logging.info("quit:")
-        exit()
+        time.sleep(30)    
+    disp.module_exit()
+except IOError as e:
+    print(e)    
+except KeyboardInterrupt:
+    disp.module_exit()
+    exit()
