@@ -11,10 +11,7 @@ from lib import LCD_1inch14
 from PIL import Image,ImageDraw,ImageFont
 from gpiozero import CPUTemperature
 import glob
-
-
-
-
+import requests, json
 
 # Raspberry Pi pin configuration:
 RST = 27
@@ -24,25 +21,19 @@ bus = 0
 device = 0 
 logging.basicConfig(level=logging.DEBUG)
 
-
-icon_map = {
-    "snow": ["snow", "sleet"],
-    "rain": ["rain"],
-    "cloud": ["fog", "cloudy", "partly-cloudy-day", "partly-cloudy-night"],
-    "sun": ["clear-day", "clear-night"],
-    "storm": [],
-    "wind": ["wind"]
-}
+URL = "http://api.openweathermap.org/data/2.5/weather?q=London&appid=" + os.environ["API_KEY"]
 
 # Pre-load icons into a dictionary with PIL
 icons = {}
 
-for icon in glob.glob("../pic/icons/*.png"):
+for icon in glob.glob("../pic/*.png"):
     icon_name = icon.split("/")[1].replace(".png", "")
     icon_image = Image.open(icon)
     icons[icon_name] = icon_image
 
-
+response = requests.get(URL)
+data = response.json()
+print(data)
 
 try:
     # display with hardware SPI:
@@ -61,7 +52,7 @@ try:
     image2 = Image.new("RGB", (disp.width, disp.height), "WHITE")
     draw = ImageDraw.Draw(image2)
 
-    draw.paste(icons["cloud"], (10, 46))
+    image2.paste(icons["01d"], (10, 46))
 
     cpu = CPUTemperature()
     temp = "CPU Temp: " + str(cpu.temperature)
