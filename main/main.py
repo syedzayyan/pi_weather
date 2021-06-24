@@ -24,6 +24,18 @@ BL = 18
 bus = 0 
 device = 0 
 logging.basicConfig(level=logging.DEBUG)
+try:
+    ''' Warning!!!Don't  creation of multiple displayer objects!!! '''
+        #disp = LCD_1inch14.LCD_1inch14(spi=SPI.SpiDev(bus, device),spi_freq=10000000,rst=RST,dc=DC,bl=BL)
+    disp = LCD_1inch14.LCD_1inch14()
+        # Initialize library.
+    disp.Init()
+except IOError as e:
+    logging.info(e)    
+except KeyboardInterrupt:
+    disp.module_exit()
+    logging.info("quit:")
+    exit()
 while True:
     try:
         URL = "http://api.openweathermap.org/data/2.5/weather?q=London&appid=" + os.getenv("API_KEY")
@@ -36,11 +48,7 @@ while True:
         maxTemp = data["main"]["temp_max"]
         tempIcon = data["weather"][0]["icon"]
         # display with hardware SPI:
-        ''' Warning!!!Don't  creation of multiple displayer objects!!! '''
-        #disp = LCD_1inch14.LCD_1inch14(spi=SPI.SpiDev(bus, device),spi_freq=10000000,rst=RST,dc=DC,bl=BL)
-        disp = LCD_1inch14.LCD_1inch14()
-        # Initialize library.
-        disp.Init()
+
         # Clear display.
         disp.clear()
         
@@ -58,7 +66,7 @@ while True:
         feelText = "Feels Like: " + str(int(feelsLike -273.00)) + "C" 
         draw.text((0, 15), feelText, font = Font0, fill = "BLACK")
 
-        minMax = "Max Temp: " + str(int(minTemp - 273.00)) + "C || Min Temp: " + str(int(maxTemp-273.00)) + "C"
+        minMax = "Min Temp: " + str(int(minTemp - 273.00)) + "C || Max Temp: " + str(int(maxTemp-273.00)) + "C"
         draw.text((0, 30), minMax, font = Font0, fill = "BLACK")
 
 
@@ -74,7 +82,6 @@ while True:
         time.sleep(7200)
 
         
-        disp.module_exit()
         logging.info("quit:")
     except IOError as e:
         logging.info(e)    
@@ -82,3 +89,4 @@ while True:
         disp.module_exit()
         logging.info("quit:")
         exit()
+disp.module_exit()
