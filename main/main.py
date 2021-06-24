@@ -35,7 +35,7 @@ try:
         disp.clear()
         
         # Create blank image for drawing.
-        URL = "http://api.openweathermap.org/data/2.5/weather?q=London&appid=" + os.getenv("API_KEY")
+        URL = "http://api.openweathermap.org/data/2.5/weather?q=Ashford&appid=" + os.getenv("API_KEY")
 
         response = requests.get(URL)
         data = response.json()
@@ -48,26 +48,28 @@ try:
         Font0 = ImageFont.truetype("../Font/Font02.ttf",18)
         Font1 = ImageFont.truetype("../Font/Font00.ttf",35)
 
-        image2 = Image.new("RGB", (disp.width, disp.height), "WHITE")
+        image2 = Image.new("RGB", (disp.width, disp.height), "BLACK")
         draw = ImageDraw.Draw(image2)
         picDir = "../pic/" + tempIcon + ".png"
         weatherIcon = Image.open(picDir)
-        image2.paste(weatherIcon, (0, 15))
+        size = 95, 95
+        weatherIcon.thumbnail(size)
+        image2.paste(weatherIcon, (15, 50))
 
         feelText = "Feels Like: " + str(int(feelsLike -273.00)) + "C" 
-        draw.text((0, 15), feelText, font = Font0, fill = "BLACK")
+        draw.text((0, 15), feelText, font = Font0, fill = "WHITE")
 
         minMax = "Max Temp: " + str(int(minTemp - 273.00)) + "C || Min Temp: " + str(int(maxTemp-273.00)) + "C"
-        draw.text((0, 30), minMax, font = Font0, fill = "BLACK")
+        draw.text((0, 30), minMax, font = Font0, fill = "PURPLE")
 
 
         currTempText = str(int(currTemp - 273.00)) + "C"
-        draw.text((130, 50), currTempText, font = Font1, fill = "BLACK")
+        draw.text((130, 50), currTempText, font = Font1, fill = "YELLOW")
         draw.text((140, 100), datetime.today().strftime('%Y-%m-%d'), font = Font0, fill = "BLUE")
 
         cpu = CPUTemperature()
         temp = "CPU Temp: " + str(cpu.temperature) + "C"
-        draw.text((0, 0), temp, font = Font0, fill = "BLACK")
+        draw.text((0, 0), temp, font = Font0, fill = "RED")
         disp.ShowImage(image2)
         time.sleep(30)    
     disp.module_exit()
