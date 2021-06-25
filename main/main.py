@@ -88,7 +88,7 @@ try:
         image2.paste(weatherIcon, (20, 70))
 
         disp.ShowImage(image2)
-        time.sleep(5)    
+        time.sleep(100)    
     disp.module_exit()
 except IOError as e:
     print(e)    
