@@ -32,28 +32,41 @@ try:
     disp.Init()
     disp.clear()
     while True:
+        API_KEY = os.getenv("API_KEY")
+        LOCATION = os.getenv("LOCATION")
+        LATITUDE = os.getenv("LATITUDE")
+        LONGITUDE = os.getenv("LONGITUDE")
+        UNITS = os.getenv("UNITS")
         
-        # Create blank image for drawing.
-        URL = "http://api.openweathermap.org/data/2.5/weather?q=Ashford&appid=" + os.getenv("API_KEY")
+        BASE_URL = 'http://api.openweathermap.org/data/2.5/onecall?'
+        URL = BASE_URL + 'lat=' + LATITUDE + '&lon=' + LONGITUDE + '&units=' + UNITS +'&appid=' + API_KEY
 
         response = requests.get(URL)
         data = response.json()
-        currTemp = data["main"]["temp"]
-        feelsLike = data["main"]["feels_like"]
-        minTemp = data["main"]["temp_min"]
-        maxTemp = data["main"]["temp_max"]
-        tempIcon = data["weather"][0]["icon"]
+        current = data['current']
+        currTemp = current['temp']
+        feelsLike = current["feels_like"]
+
+
+        daily = data['daily']
+        daily_precip_float = daily[0]['pop']
+        daily_temp = daily[0]['temp']
+        minTemp = daily_temp['min']
+        maxTemp = daily_temp['max']
+        chanceOfRain = daily_precip_float * 100
+
+        weather = current['weather']
+        tempIcon = weather[0]['icon']
         
         Font0 = ImageFont.truetype("../Font/Font02.ttf",18)
         Font1 = ImageFont.truetype("../Font/Font00.ttf",35)
 
         image2 = Image.new("RGB", (disp.width, disp.height), "BLACK")
         draw = ImageDraw.Draw(image2)
-        picDir = "../pic/" + tempIcon + ".png"
-        weatherIcon = Image.open(picDir)
-        size = 95, 95
-        weatherIcon.thumbnail(size)
-        image2.paste(weatherIcon, (15, 40))
+
+        cpu = CPUTemperature()
+        temp = "CPU Temp: " + str(cpu.temperature) + "C"
+        draw.text((0, 0), temp, font = Font0, fill = "RED")
 
         feelText = "Feels Like: " + str(int(feelsLike -273.00)) + "C" 
         draw.text((0, 15), feelText, font = Font0, fill = "WHITE")
@@ -61,14 +74,20 @@ try:
         minMax = "Min Temp: " + str(int(minTemp - 273.00)) + "C || Max Temp: " + str(int(maxTemp-273.00)) + "C"
         draw.text((0, 30), minMax, font = Font0, fill = "PURPLE")
 
+        chanceRainText = "Chance of Rain: " + str(format(chanceOfRain, '.0f')) + "%"
+        draw.text((0, 45), chanceRainText, font = Font0, fill = "BLUE")
 
         currTempText = str(int(currTemp - 273.00)) + "C"
-        draw.text((130, 50), currTempText, font = Font1, fill = "YELLOW")
-        draw.text((120, 100), datetime.today().strftime('%a %Y-%m-%d'), font = Font0, fill = "BLUE")
+        draw.text((130, 55), currTempText, font = Font1, fill = "YELLOW")
+        draw.text((120, 100), datetime.today().strftime('%a %Y-%m-%d'), font = Font0, fill = "GREEN")
 
-        cpu = CPUTemperature()
-        temp = "CPU Temp: " + str(cpu.temperature) + "C"
-        draw.text((0, 0), temp, font = Font0, fill = "RED")
+
+        picDir = "../pic/" + tempIcon + ".png"
+        weatherIcon = Image.open(picDir)
+        size = 95, 95
+        weatherIcon.thumbnail(size)
+        image2.paste(weatherIcon, (20, 40))
+
         disp.ShowImage(image2)
         time.sleep(5)    
     disp.module_exit()
