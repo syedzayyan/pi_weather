@@ -36,10 +36,9 @@ try:
         LOCATION = os.getenv("LOCATION")
         LATITUDE = os.getenv("LATITUDE")
         LONGITUDE = os.getenv("LONGITUDE")
-        UNITS = os.getenv("UNITS")
         
         BASE_URL = 'http://api.openweathermap.org/data/2.5/onecall?'
-        URL = BASE_URL + 'lat=' + LATITUDE + '&lon=' + LONGITUDE + '&units=' + UNITS +'&appid=' + API_KEY
+        URL = BASE_URL + 'lat=' + LATITUDE + '&lon=' + LONGITUDE +'&appid=' + API_KEY
 
         response = requests.get(URL)
         data = response.json()
@@ -78,15 +77,15 @@ try:
         draw.text((0, 45), chanceRainText, font = Font0, fill = "BLUE")
 
         currTempText = str(int(currTemp - 273.00)) + "C"
-        draw.text((130, 55), currTempText, font = Font1, fill = "YELLOW")
-        draw.text((120, 100), datetime.today().strftime('%a %Y-%m-%d'), font = Font0, fill = "GREEN")
+        draw.text((130, 65), currTempText, font = Font1, fill = "YELLOW")
+        draw.text((120, 110), datetime.today().strftime('%a %Y-%m-%d'), font = Font0, fill = "GREEN")
 
 
         picDir = "../pic/" + tempIcon + ".png"
         weatherIcon = Image.open(picDir)
-        size = 95, 95
+        size = 65, 65
         weatherIcon.thumbnail(size)
-        image2.paste(weatherIcon, (20, 40))
+        image2.paste(weatherIcon, (20, 70))
 
         disp.ShowImage(image2)
         time.sleep(5)    
