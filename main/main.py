@@ -64,7 +64,7 @@ try:
         draw = ImageDraw.Draw(image2)
 
         cpu = CPUTemperature()
-        temp = "CPU Temp: " + str(cpu.temperature) + "C"
+        temp = "CPU Temp: " + str(int(cpu.temperature)) + "C"
         draw.text((0, 0), temp, font = Font0, fill = "RED")
 
         feelText = "Feels Like: " + str(int(feelsLike -273.00)) + "C" 
@@ -88,7 +88,7 @@ try:
         image2.paste(weatherIcon, (20, 70))
 
         disp.ShowImage(image2)
-        time.sleep(100)    
+        time.sleep(100)
     disp.module_exit()
 except IOError as e:
     print(e)    
